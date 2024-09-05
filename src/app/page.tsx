@@ -1,23 +1,35 @@
-import Link from "next/link";
-
-import { LatestPost } from "~/app/_components/post";
+// import { LatestPost } from "~/app/_components/post";
+// import { api, HydrateClient } from "~/trpc/server";
+// import SignOut from "./_components/signout";
+import { redirect } from "next/navigation";
 import { getServerAuthSession } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
-import SignOut from "./_components/signout";
+import { api } from "~/trpc/server";
+import { getTodaysGames } from "./api/third-party/basketball-api";
 
 export default async function Home() {
   const session = await getServerAuthSession();
+  const gamesResponse = await getTodaysGames();
+  const leaderboard = await api.leaderboard.getTokens();
+  const leader = leaderboard.users[0];
 
+  if (!session) {
+    redirect("/login");
+  }
   return (
     <div>
       <h1>hello</h1>
-      <Link
-        href={session ? "/api/auth/signout" : "/api/auth/signin"}
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-      >
-        {session ? "Sign out" : "Sign in"}
-      </Link>
-      <div>{}</div>
+      <div>This is the home page</div>
+      {leader && (
+        <div>
+          {leader.userId} has the most tokens with: {leader?.tokens}
+        </div>
+      )}
+      {gamesResponse.response && (
+        <div>
+          Game #1: {gamesResponse.response[0]?.teams.away.name} vs{" "}
+          {gamesResponse.response[0]?.teams.home.name}
+        </div>
+      )}
     </div>
   );
 
