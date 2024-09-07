@@ -8,7 +8,7 @@ export type GamesApiResponse = {
   response: GameResponse[];
 };
 
-type GameResponse = {
+export type GameResponse = {
   id: number;
   date: string;
   time: string;

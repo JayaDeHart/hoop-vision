@@ -1,6 +1,8 @@
-import { GamesApiResponse } from "~/app/types";
+/* eslint-disable */
 
-export async function getTodaysGames(): Promise<GamesApiResponse> {
+import { GameResponse, GamesApiResponse } from "~/app/types";
+
+export async function getTodaysGames(): Promise<GameResponse[]> {
   const today = new Date().toISOString().split("T")[0];
   const url = `https://api-basketball.p.rapidapi.com/games?date=${today}`;
 
@@ -18,10 +20,10 @@ export async function getTodaysGames(): Promise<GamesApiResponse> {
       throw new Error("Failed to fetch games data");
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const result = await response.json();
+    const result: GamesApiResponse = await response.json();
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return result;
+    return result.response.filter((game) => game.status.short === "NS");
   } catch (error) {
     console.error("Error fetching games:", error);
     throw new Error("Could not fetch games");
