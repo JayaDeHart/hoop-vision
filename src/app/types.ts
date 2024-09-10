@@ -1,3 +1,4 @@
+//games
 export type GamesApiResponse = {
   get: string;
   parameters: {
@@ -68,4 +69,20 @@ type ScoreDetails = {
   quarter_4: number;
   over_time: number | null;
   total: number;
+};
+
+//bets
+type Bet = {
+  value: string;
+  odd: string;
+};
+
+export type HomeAwayBet = {
+  game: number;
+  bookmaker: string;
+  bet: {
+    id: number;
+    name: string;
+    values: Bet[];
+  } | null;
 };

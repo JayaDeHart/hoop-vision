@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { type GameResponse } from "../types";
+import { type HomeAwayBet, type GameResponse } from "../types";
 
 import {
   Card,
@@ -15,13 +15,21 @@ import Image from "next/image";
 
 type Props = {
   game: GameResponse;
+  odds: HomeAwayBet;
 };
 
-function Game({ game }: Props) {
+function Game({ game, odds }: Props) {
   const homeTeam = game.teams.home;
   const awayTeam = game.teams.away;
+  let homeOdds = null;
+  let awayOdds = null;
 
-  console.log(awayTeam.logo, homeTeam.logo);
+  if (odds.bet) {
+    homeOdds = odds.bet.values.find((bet) => bet.value === "Home")?.odd;
+    awayOdds = odds.bet.values.find((bet) => bet.value === "Away")?.odd;
+  }
+
+  console.log("@#@@@@@/", odds);
 
   const [awayLogo, setAwayLogo] = useState(awayTeam.logo);
   const [homeLogo, setHomeLogo] = useState(homeTeam.logo);
@@ -76,7 +84,14 @@ function Game({ game }: Props) {
         <p>@{game.time}</p>
       </CardContent>
       <CardFooter className="relative z-10">
-        <p>Game odds here</p>
+        {odds.bet ? (
+          <div className="flex flex-col">
+            <p>Home: {homeOdds}</p>
+            <p>Away: {awayOdds}</p>
+          </div>
+        ) : (
+          <p>No odds found</p>
+        )}
       </CardFooter>
     </Card>
   );
