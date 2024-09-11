@@ -24,7 +24,7 @@ export async function getTodaysGames(): Promise<GameResponse[]> {
     const result: GamesApiResponse = await response.json();
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return result.response.filter((game) => game.status.short === "NS");
+    return result.response;
   } catch (error) {
     console.error("Error fetching games:", error);
     throw new Error("Could not fetch games");

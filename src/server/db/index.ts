@@ -10,3 +10,5 @@ const isDev = process.env.NODE_ENV === "development";
 export const db = isDev
   ? postgresDrizzle(postgres(env.POSTGRES_URL_LOCAL), { schema })
   : vercelDrizzle(vercelSql, { schema });
+
+// export const db = vercelDrizzle(vercelSql, { schema });

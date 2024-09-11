@@ -130,6 +130,7 @@ export const games = createTable("games", {
     mode: "date",
     withTimezone: true,
   }).notNull(),
+  status: varchar("status").notNull(),
 });
 
 export const gamesRelations = relations(games, () => ({}));
@@ -147,7 +148,7 @@ export const bets = createTable("bets", {
     .references(() => games.id),
   amount: integer("amount").notNull(),
   chosenTeam: varchar("chosen_team", { length: 255 }).notNull(),
-  result: varchar("result", { length: 50 }), // "win", "loss", or "pending"
+  result: varchar("result", { length: 50 }).default("pending"), // "win", "loss", or "pending"
   payout: doublePrecision("payout").default(0), // Amount of winnings (0 if lost)
 });
 
