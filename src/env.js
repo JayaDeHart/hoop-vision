@@ -29,6 +29,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     BASKETBALL_API_SECRET: z.string(),
+    POSTGRES_URL_LOCAL: z.string(),
   },
 
   /**
@@ -56,6 +57,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     BASKETBALL_API_SECRET: process.env.BASKETBALL_API_SECRET,
+    POSTGRES_URL_LOCAL: process.env.POSTGRES_URL_LOCAL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

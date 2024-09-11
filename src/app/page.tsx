@@ -4,18 +4,12 @@
 import { redirect } from "next/navigation";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
-import {
-  getOddsByGames,
-  getTodaysGames,
-  linkGamesWithBets,
-} from "./api/third-party/basketball-api";
+import { getGamesWithOdds } from "./api/third-party/basketball-api";
 import Game from "./_components/game";
 
 export default async function Home() {
   const session = await getServerAuthSession();
-  const games = await getTodaysGames();
-  const odds = await getOddsByGames(games.map((game) => game.id));
-  const gamesWithOdds = linkGamesWithBets(games, odds);
+  const gamesWithOdds = await getGamesWithOdds();
 
   if (!session) {
     redirect("/login");

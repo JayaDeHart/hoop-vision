@@ -7,9 +7,11 @@
     "build": "next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
+    "db:push:dev": "NODE_ENV=development drizzle-kit push",
+    "db:push:prod": "NODE_ENV=production drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "dev": "next dev",
+    "dev-mock": "USE_MOCK_DATA=true next dev",
     "lint": "next lint",
     "start": "next start"
   },
