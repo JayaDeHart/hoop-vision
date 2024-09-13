@@ -1,4 +1,9 @@
 //games
+export type GameWithOdds = {
+  game: GameResponse;
+  odds: HomeAwayBet;
+};
+
 export type GamesApiResponse = {
   get: string;
   parameters: {

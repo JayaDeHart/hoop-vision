@@ -11,6 +11,7 @@ import Google from "next-auth/providers/google";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { eq } from "drizzle-orm";
 import {
   accounts,
   sessions,
@@ -29,6 +30,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      tokens: number;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -47,13 +49,22 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      const tokensRecord = await db
+        .select({ tokens: userTokens.tokens })
+        .from(userTokens)
+        .where(eq(userTokens.userId, user.id))
+        .limit(1);
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          tokens: tokensRecord[0]?.tokens ?? 0, // default to 0 if no record found
+        },
+      };
+    },
   },
   adapter: DrizzleAdapter(db, {
     usersTable: users,

@@ -1,4 +1,4 @@
-import { type GameResponse, type HomeAwayBet } from "~/app/types";
+import { GameWithOdds, type GameResponse, type HomeAwayBet } from "~/app/types";
 
 const mockGameResponse = {
   get: "games",
@@ -1311,7 +1311,7 @@ export async function getMockTodaysGames(): Promise<GameResponse[]> {
   return mockGameResponse.response;
 }
 
-export function getMockGamesWithOdds(): [GameResponse, HomeAwayBet][] {
+export function getMockGamesWithOdds(): GameWithOdds[] {
   const games: GameResponse[] = mockGameResponse.response;
   const bet: HomeAwayBet = {
     game: 419093,
@@ -1331,10 +1331,10 @@ export function getMockGamesWithOdds(): [GameResponse, HomeAwayBet][] {
       ],
     },
   };
-  return games.map((game) => [game, bet]);
+  return games.map((game) => ({ game, odds: bet }));
 }
 
-export function getMockGamesWithOddsUpdate(): [GameResponse, HomeAwayBet][] {
+export function getMockGamesWithOddsUpdate(): GameWithOdds[] {
   const games: GameResponse[] = mockGameResponse2.response;
   const bet: HomeAwayBet = {
     game: 419093,
@@ -1354,5 +1354,5 @@ export function getMockGamesWithOddsUpdate(): [GameResponse, HomeAwayBet][] {
       ],
     },
   };
-  return games.map((game) => [game, bet]);
+  return games.map((game) => ({ game, odds: bet }));
 }

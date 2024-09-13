@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { games, bets } from "~/server/db/schema";
+import { games, bets, userTokens } from "~/server/db/schema";
 import { eq, sql, and, inArray } from "drizzle-orm";
 import { getGamesWithOdds } from "~/app/api/third-party/basketball-api";
 import { type InferInsertModel } from "drizzle-orm";
@@ -12,7 +12,7 @@ export const gamesRouter = createTRPCRouter({
     try {
       const gamesWithOdds = await getGamesWithOdds();
 
-      for (const [game, odds] of gamesWithOdds) {
+      for (const { game, odds } of gamesWithOdds) {
         const existingGame = await db
           .select()
           .from(games)
@@ -47,7 +47,7 @@ export const gamesRouter = createTRPCRouter({
             oddsTeamB: awayOdds,
             gameDate: new Date(game.date),
             status: game.status.short,
-            winner: getWinningTeam(game),
+            winner: getWinningTeam(game).winner,
           };
 
           await db.insert(games).values(gameData);
@@ -57,10 +57,12 @@ export const gamesRouter = createTRPCRouter({
       // get pending bets that match with completed games
 
       const completedGames = gamesWithOdds.filter(
-        ([game]) => game.status.short === "FT",
+        ({ game }) => game.status.short === "FT",
       );
 
-      const completedGameIds = completedGames.map(([game]) => String(game.id));
+      const completedGameIds = completedGames.map(({ game }) =>
+        String(game.id),
+      );
 
       const unfinishedBets = await db
         .select()
@@ -72,8 +74,55 @@ export const gamesRouter = createTRPCRouter({
           ),
         );
 
-      const updatedBets = [];
-      const updatedUserTokens = [];
+      await Promise.all(
+        unfinishedBets.map(async (bet) => {
+          const game = completedGames.find(
+            ({ game }) => String(game.id) === bet.gameId,
+          );
+          if (game) {
+            const winner = getWinningTeam(game.game);
+            if (winner.winner === bet.chosenTeam) {
+              const odds = game.odds.bet?.values.find(
+                (bet) => bet.value === winner.position,
+              );
+              if (odds) {
+                const payout = bet.amount * Number(odds.value);
+
+                // update bet with win + payout
+                await db
+                  .update(bets)
+                  .set({
+                    result: "win",
+                    payout: payout,
+                  })
+                  .where(eq(bets.id, bet.id));
+
+                // update user tokens with payout
+                const tokens = await db
+                  .select()
+                  .from(userTokens)
+                  .where(eq(userTokens.userId, bet.userId));
+                if (tokens[0]) {
+                  const newTokens = tokens[0].tokens + payout;
+                  await db
+                    .update(userTokens)
+                    .set({ tokens: newTokens })
+                    .where(eq(userTokens.userId, bet.userId));
+                }
+              }
+            } else {
+              // update bet with loss
+              await db
+                .update(bets)
+                .set({
+                  result: "loss",
+                  payout: 0,
+                })
+                .where(eq(bets.id, bet.id));
+            }
+          }
+        }),
+      );
 
       //map through unfinished bets
       //update each bet with win or loss

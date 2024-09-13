@@ -8,7 +8,6 @@ import Game from "./_components/game";
 
 export default async function Home() {
   const session = await getServerAuthSession();
-  // const gamesWithOdds = await getGamesWithOdds();'
   const gamesWithOdds = await api.games.updateGames();
 
   if (!session) {
@@ -16,7 +15,7 @@ export default async function Home() {
   }
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-      {gamesWithOdds.games.slice(-12).map(([game, odds]) => (
+      {gamesWithOdds.games.slice(-12).map(({ game, odds }) => (
         <Game game={game} key={game.id} odds={odds} />
       ))}
     </div>

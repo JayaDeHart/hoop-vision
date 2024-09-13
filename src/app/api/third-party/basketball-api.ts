@@ -1,6 +1,11 @@
 /* eslint-disable */
 
-import { GameResponse, GamesApiResponse, HomeAwayBet } from "~/app/types";
+import {
+  GameResponse,
+  GamesApiResponse,
+  GameWithOdds,
+  HomeAwayBet,
+} from "~/app/types";
 import { getMockGamesWithOdds } from "./mock-basketball-api";
 
 export async function getTodaysGames(): Promise<GameResponse[]> {
@@ -101,16 +106,19 @@ function getHomeAwayBet(data: any): HomeAwayBet {
 export function linkGamesWithBets(
   games: GameResponse[],
   bets: HomeAwayBet[],
-): [GameResponse, HomeAwayBet][] {
+): GameWithOdds[] {
   return games
     .map((game) => {
       const bet = bets.find((b) => b.game === game.id);
       if (bet) {
-        return [game, bet];
+        return {
+          game: game,
+          odds: bet,
+        };
       }
       return null;
     })
-    .filter((item): item is [GameResponse, HomeAwayBet] => item !== null);
+    .filter((item): item is GameWithOdds => item !== null);
 }
 
 export async function getGamesWithOdds() {
@@ -123,10 +131,19 @@ export async function getGamesWithOdds() {
   }
 }
 
-export function getWinningTeam(game: GameResponse): string {
+export function getWinningTeam(game: GameResponse): {
+  winner: string;
+  position: string;
+} {
   if (game.scores.home.total > game.scores.away.total) {
-    return game.teams.home.name;
+    return {
+      winner: game.teams.home.name,
+      position: "home",
+    };
   } else {
-    return game.teams.away.name;
+    return {
+      winner: game.teams.away.name,
+      position: "away",
+    };
   }
 }
