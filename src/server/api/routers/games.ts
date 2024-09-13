@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { games } from "~/server/db/schema";
-import { eq } from "drizzle-orm";
+import { games, bets } from "~/server/db/schema";
+import { eq, sql, and, inArray } from "drizzle-orm";
 import { getGamesWithOdds } from "~/app/api/third-party/basketball-api";
 import { type InferInsertModel } from "drizzle-orm";
+import { getWinningTeam } from "~/app/api/third-party/basketball-api";
 
 export const gamesRouter = createTRPCRouter({
   updateGames: publicProcedure.mutation(async () => {
@@ -46,11 +47,37 @@ export const gamesRouter = createTRPCRouter({
             oddsTeamB: awayOdds,
             gameDate: new Date(game.date),
             status: game.status.short,
+            winner: getWinningTeam(game),
           };
 
           await db.insert(games).values(gameData);
         }
       }
+
+      // get pending bets that match with completed games
+
+      const completedGames = gamesWithOdds.filter(
+        ([game]) => game.status.short === "FT",
+      );
+
+      const completedGameIds = completedGames.map(([game]) => String(game.id));
+
+      const unfinishedBets = await db
+        .select()
+        .from(bets)
+        .where(
+          and(
+            eq(bets.result, "pending"), // Check if the bet result is pending
+            inArray(bets.gameId, completedGameIds), // Check if the gameId is in the list of completedGameIds
+          ),
+        );
+
+      const updatedBets = [];
+      const updatedUserTokens = [];
+
+      //map through unfinished bets
+      //update each bet with win or loss
+      //update user tokens in case of win
 
       return { success: true, games: gamesWithOdds };
     } catch (error) {

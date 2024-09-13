@@ -131,6 +131,7 @@ export const games = createTable("games", {
     withTimezone: true,
   }).notNull(),
   status: varchar("status").notNull(),
+  winner: varchar("winner", { length: 255 }).notNull(),
 });
 
 export const gamesRelations = relations(games, () => ({}));

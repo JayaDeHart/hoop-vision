@@ -122,3 +122,11 @@ export async function getGamesWithOdds() {
     return linkGamesWithBets(games, odds);
   }
 }
+
+export function getWinningTeam(game: GameResponse): string {
+  if (game.scores.home.total > game.scores.away.total) {
+    return game.teams.home.name;
+  } else {
+    return game.teams.away.name;
+  }
+}
