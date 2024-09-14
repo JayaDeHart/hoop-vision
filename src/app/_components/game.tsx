@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { type HomeAwayBet, type GameResponse } from "../types";
 import {
   Card,
@@ -13,6 +13,7 @@ import Modal from "./modal";
 import { Input } from "~/components/ui/input";
 import TeamLogo from "./teamLogo";
 import { useSession } from "next-auth/react";
+import { api } from "~/trpc/react";
 
 type Props = {
   game: GameResponse;
@@ -36,13 +37,44 @@ function Game({ game, odds }: Props) {
   const [selectedTeam, setSelectedTeam] = useState<"home" | "away" | null>(
     null,
   );
+  const [amount, setAmount] = useState<number | null>(null);
 
   const handleClose = () => {
     setIsModalOpen(false);
   };
 
   const handleTeamSelect = (team: "home" | "away") => {
+    console.log(game);
     setSelectedTeam(team === selectedTeam ? null : team);
+  };
+
+  const placeBet = api.bets.placeBet.useMutation({
+    onSuccess: (data) => {
+      console.log(data);
+      setIsModalOpen(false);
+    },
+    onError: (e) => {
+      console.log(e);
+    },
+  });
+
+  const handlePlaceBet = async () => {
+    // check that team is selected
+    // check that amount is < user tokens
+    // check that game status is not started
+    // call placeBet api with params
+
+    if (selectedTeam && amount && amount < tokens) {
+      placeBet.mutate({
+        amount: amount,
+        game: String(game.id),
+        team: selectedTeam,
+      });
+    }
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(Number(e.target.value));
   };
 
   return (
@@ -82,7 +114,7 @@ function Game({ game, odds }: Props) {
       </Card>
 
       <Modal isOpen={isModalOpen} onClose={handleClose} width="md">
-        <div className="flex flex-col gap-4">
+        <div className="flex max-w-md flex-col gap-4">
           <div className="flex justify-between">
             <div
               className={`cursor-pointer p-4 text-center ${
@@ -107,7 +139,18 @@ function Game({ game, odds }: Props) {
               <div>{awayOdds}</div>
             </div>
           </div>
-          <Input type="number" placeholder={`Available tokens: ${tokens}`} />
+          <Input
+            type="number"
+            placeholder={`Available tokens: ${tokens}`}
+            onChange={handleAmountChange}
+          />
+          <button
+            className="rounded-full border-2 border-slate-200"
+            onClick={handlePlaceBet}
+            disabled={placeBet.isPending}
+          >
+            Place Bet
+          </button>
         </div>
       </Modal>
     </div>

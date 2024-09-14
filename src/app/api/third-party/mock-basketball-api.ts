@@ -1,4 +1,8 @@
-import { GameWithOdds, type GameResponse, type HomeAwayBet } from "~/app/types";
+import {
+  type GameWithOdds,
+  type GameResponse,
+  type HomeAwayBet,
+} from "~/app/types";
 
 const mockGameResponse = {
   get: "games",
@@ -19,7 +23,7 @@ const mockGameResponse = {
       venue: "Wintrust Arena",
       status: {
         long: "Game Finished",
-        short: "FT",
+        short: "NS",
         timer: null,
       },
       league: {
@@ -1331,7 +1335,9 @@ export function getMockGamesWithOdds(): GameWithOdds[] {
       ],
     },
   };
-  return games.map((game) => ({ game, odds: bet }));
+  return games
+    .filter((game) => game.status.short === "NS")
+    .map((game) => ({ game, odds: bet }));
 }
 
 export function getMockGamesWithOddsUpdate(): GameWithOdds[] {
@@ -1354,5 +1360,7 @@ export function getMockGamesWithOddsUpdate(): GameWithOdds[] {
       ],
     },
   };
-  return games.map((game) => ({ game, odds: bet }));
+  return games
+    .filter((game) => game.status.short === "NS")
+    .map((game) => ({ game, odds: bet }));
 }

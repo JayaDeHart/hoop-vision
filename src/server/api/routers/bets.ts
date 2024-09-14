@@ -25,6 +25,9 @@ export const betsRouter = createTRPCRouter({
         .where(eq(games.id, input.game))
         .limit(1);
 
+      console.log(game);
+      console.log(game[0]?.status);
+
       if (game.length === 0) {
         throw new Error("Game not found");
       }
