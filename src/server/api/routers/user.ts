@@ -7,6 +7,7 @@ import { db } from "~/server/db";
 import { userTokens } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 import { bets, games } from "~/server/db/schema";
+import { type GameResponse } from "~/app/types";
 
 export const userRouter = createTRPCRouter({
   getUserTokens: protectedProcedure.query(async ({ ctx }) => {
@@ -31,6 +32,13 @@ export const userRouter = createTRPCRouter({
       .innerJoin(games, eq(bets.gameId, games.id)) // Perform the join on the gameId
       .where(eq(bets.userId, session.user.id));
 
-    return userBetsWithGames; // Will return an array of { bet, game }
+    // Explicitly cast the gameData as GameResponse
+    return userBetsWithGames.map((entry) => ({
+      bet: entry.bet,
+      game: {
+        ...entry.game,
+        gameData: entry.game.gameData as GameResponse, // Cast gameData to GameResponse type
+      },
+    }));
   }),
 });

@@ -10,6 +10,7 @@
     "db:push:dev": "NODE_ENV=development drizzle-kit push",
     "db:push:prod": "NODE_ENV=production drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:studio:dev": "NODE_ENV=development drizzle-kit studio",
     "dev": "next dev",
     "dev-mock": "USE_MOCK_DATA=true next dev",
     "lint": "next lint",

@@ -5,10 +5,13 @@ import { redirect } from "next/navigation";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import Game from "./_components/game";
+import { Button } from "~/components/ui/button";
+import UpdateButton from "./_components/updateButton";
 
 export default async function Home() {
   const session = await getServerAuthSession();
-  const gamesWithOdds = await api.games.updateGames();
+  const gamesWithOdds = await api.games.updateGames({});
+  const isDev = process.env.NODE_ENV === "development";
 
   if (!session) {
     redirect("/login");
@@ -18,6 +21,8 @@ export default async function Home() {
       {gamesWithOdds.games.slice(-12).map(({ game, odds }) => (
         <Game game={game} key={game.id} odds={odds} />
       ))}
+
+      {isDev && <UpdateButton />}
     </div>
   );
 }

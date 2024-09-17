@@ -1,13 +1,9 @@
-import React from "react";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 import { redirect } from "next/navigation";
-import TeamLogo from "../_components/teamLogo";
 import Bet from "../_components/bet";
 
-type Props = {};
-
-async function Profile({}: Props) {
+async function Profile() {
   const session = await getServerAuthSession();
 
   if (!session) {

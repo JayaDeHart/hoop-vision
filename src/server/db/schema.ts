@@ -8,9 +8,9 @@ import {
   text,
   timestamp,
   varchar,
+  json,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
-
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
  * database instance for multiple projects.
@@ -132,6 +132,7 @@ export const games = createTable("games", {
   }).notNull(),
   status: varchar("status").notNull(),
   winner: varchar("winner", { length: 255 }).notNull(),
+  gameData: json("game_data").notNull(),
 });
 
 export const gamesRelations = relations(games, () => ({}));

@@ -1360,7 +1360,5 @@ export function getMockGamesWithOddsUpdate(): GameWithOdds[] {
       ],
     },
   };
-  return games
-    .filter((game) => game.status.short === "NS")
-    .map((game) => ({ game, odds: bet }));
+  return games.map((game) => ({ game, odds: bet }));
 }

@@ -6,7 +6,10 @@ import {
   GameWithOdds,
   HomeAwayBet,
 } from "~/app/types";
-import { getMockGamesWithOdds } from "./mock-basketball-api";
+import {
+  getMockGamesWithOdds,
+  getMockGamesWithOddsUpdate,
+} from "./mock-basketball-api";
 
 export async function getTodaysGames(): Promise<GameResponse[]> {
   const today = new Date().toISOString().split("T")[0];
@@ -121,9 +124,11 @@ export function linkGamesWithBets(
     .filter((item): item is GameWithOdds => item !== null);
 }
 
-export async function getGamesWithOdds() {
+export async function getGamesWithOdds(triggerManualUpdate: boolean) {
   if (process.env.USE_MOCK_DATA) {
-    return getMockGamesWithOdds();
+    return triggerManualUpdate
+      ? getMockGamesWithOddsUpdate()
+      : getMockGamesWithOdds();
   } else {
     const games = await getTodaysGames();
     const odds = await getOddsByGames(games.map((game) => game.id));
