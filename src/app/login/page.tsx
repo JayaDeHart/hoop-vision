@@ -1,4 +1,3 @@
-import React from "react";
 import { getServerAuthSession } from "~/server/auth";
 import Link from "next/link";
 

@@ -32,6 +32,7 @@ export const gamesRouter = createTRPCRouter({
                 .update(games)
                 .set({
                   status: game.status.short,
+                  winner: getWinningTeam(game).winner,
                 })
                 .where(eq(games.id, game.id.toString()));
             }

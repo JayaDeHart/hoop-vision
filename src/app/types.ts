@@ -68,12 +68,12 @@ type Scores = {
 };
 
 type ScoreDetails = {
-  quarter_1: number;
-  quarter_2: number;
-  quarter_3: number;
-  quarter_4: number;
+  quarter_1: number | null;
+  quarter_2: number | null;
+  quarter_3: number | null;
+  quarter_4: number | null;
   over_time: number | null;
-  total: number;
+  total: number | null;
 };
 
 //bets

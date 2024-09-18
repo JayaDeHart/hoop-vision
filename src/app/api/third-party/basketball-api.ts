@@ -138,8 +138,22 @@ export async function getGamesWithOdds(triggerManualUpdate: boolean) {
 
 export function getWinningTeam(game: GameResponse): {
   winner: string;
-  position: string;
+  position: string | null;
 } {
+  if (game.status.short === "NS") {
+    return {
+      winner: "pending",
+      position: null,
+    };
+  }
+
+  if (game.scores.home.total === null || game.scores.away.total === null) {
+    return {
+      winner: "pending",
+      position: null,
+    };
+  }
+
   if (game.scores.home.total > game.scores.away.total) {
     return {
       winner: game.teams.home.name,
