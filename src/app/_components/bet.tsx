@@ -1,3 +1,4 @@
+import { SiRubygems } from "react-icons/si";
 import {
   Card,
   CardContent,
@@ -39,10 +40,43 @@ function Bet({ bet, game }: Props) {
       ? bet.amount * game.oddsTeamA
       : bet.amount * game.oddsTeamB;
 
+  const WinText = () => {
+    return (
+      <div className="flex flex-col items-center text-xl">
+        <div className="font-bold text-green-500">Hit</div>
+        <div className="flex items-center gap-2 text-lg text-green-300">
+          + {bet.payout} <SiRubygems />
+        </div>
+      </div>
+    );
+  };
+
+  const LossText = () => {
+    return (
+      <div className="flex flex-col items-center text-xl">
+        <div className="font-bold text-red-500">Miss</div>
+        <div className="flex items-center gap-2 text-lg text-red-300">
+          - {bet.amount} <SiRubygems />
+        </div>
+      </div>
+    );
+  };
+
+  const PendingText = () => {
+    return <div className="text-xl text-gray-500">Ongoing</div>;
+  };
+
+  const payoutTextMap = new Map([
+    ["win", <WinText key="win" />],
+    ["loss", <LossText key="loss" />],
+    ["pending", <PendingText key="pending" />],
+    [null, <PendingText key="pending" />],
+  ]);
+
   return (
     <Card className="flex flex-col items-center">
       <CardHeader>
-        <CardTitle className="flex grid-cols-3 gap-3">
+        <CardTitle className="flex items-baseline gap-3">
           <div
             className={`${
               bet.chosenTeam === "home" ? "border-2 border-green-500" : ""
@@ -50,7 +84,7 @@ function Bet({ bet, game }: Props) {
           >
             <TeamLogo teamName={homeTeam.name} teamLogo={homeTeam.logo} />
           </div>
-          <div>At</div>
+          <div className="text-2xl font-bold">@</div>
           <div
             className={`${
               bet.chosenTeam === "away" ? "border-2 border-green-500" : ""
@@ -61,8 +95,7 @@ function Bet({ bet, game }: Props) {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">
-        <p>Status: {bet.result}</p>
-        <p>Payout: {payout}</p>
+        {payoutTextMap.get(bet.result)}
       </CardContent>
     </Card>
   );

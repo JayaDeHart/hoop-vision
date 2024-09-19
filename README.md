@@ -1,3 +1,5 @@
+# Project Details
+
 # Running Database Seed:
 
 1. Sign in to the app with any oauth account

@@ -9,6 +9,7 @@ import {
 } from "../../components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import Bet from "../_components/bet";
+import { SiRubygems } from "react-icons/si";
 
 async function Profile() {
   const session = await getServerAuthSession();
@@ -49,10 +50,11 @@ async function Profile() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tokens </CardTitle>
+              <CardTitle className="text-sm font-medium">Tokens</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex items-baseline gap-2">
               <div className="text-2xl font-bold">{session.user.tokens}</div>
+              <SiRubygems />
             </CardContent>
           </Card>
         </CardContent>
