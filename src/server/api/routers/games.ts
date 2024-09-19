@@ -144,4 +144,13 @@ export const gamesRouter = createTRPCRouter({
         throw new Error("Failed to update games.");
       }
     }),
+
+  getUnstartedGames: publicProcedure.query(async () => {
+    const unstartedGames = await db
+      .select()
+      .from(games)
+      .where(eq(games.status, "NS"));
+
+    return unstartedGames;
+  }),
 });

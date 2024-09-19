@@ -8,7 +8,8 @@ import UpdateButton from "./_components/updateButton";
 export default async function Home() {
   const session = await getServerAuthSession();
   const gamesWithOdds = await api.games.updateGames({});
-  const isDev = process.env.NODE_ENV === "development";
+  const currentGames = await api.games.getUnstartedGames();
+  // const isDev = process.env.NODE_ENV === "development";
 
   if (!session) {
     redirect("/login");
