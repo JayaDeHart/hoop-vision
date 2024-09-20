@@ -5,6 +5,8 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { AuthProvider } from "./providers";
+import TopNav from "./_components/topNav";
+import BottomNav from "./_components/bottomNav";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -16,10 +18,17 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} m-24 bg-slate-50`}>
+    <html
+      lang="en"
+      className={`${GeistSans.variable} min-h-screen bg-slate-50`}
+    >
       <body>
         <TRPCReactProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <TopNav />
+            <div className="bg-slate-50 p-24">{children}</div>
+            <BottomNav />
+          </AuthProvider>
         </TRPCReactProvider>
       </body>
     </html>
