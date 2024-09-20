@@ -122,10 +122,10 @@ export const userTokensRelations = relations(userTokens, ({ one }) => ({
 
 export const games = createTable("games", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  teamA: varchar("team_a", { length: 255 }).notNull(),
-  teamB: varchar("team_b", { length: 255 }).notNull(),
-  oddsTeamA: doublePrecision("odds_team_a").notNull(),
-  oddsTeamB: doublePrecision("odds_team_b").notNull(),
+  homeTeam: varchar("home_team", { length: 255 }).notNull(),
+  awayTeam: varchar("away_team", { length: 255 }).notNull(),
+  oddsHomeTeam: doublePrecision("odds_home_team").notNull(),
+  oddsAwayTeam: doublePrecision("odds_away_team").notNull(),
   gameDate: timestamp("game_date", {
     mode: "date",
     withTimezone: true,

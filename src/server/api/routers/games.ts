@@ -6,6 +6,7 @@ import { eq, sql, and, inArray } from "drizzle-orm";
 import { getGamesWithOdds } from "~/app/api/third-party/basketball-api";
 import { type InferInsertModel } from "drizzle-orm";
 import { getWinningTeam } from "~/app/api/third-party/basketball-api";
+import { GameResponse } from "~/app/types";
 
 export const gamesRouter = createTRPCRouter({
   updateGames: publicProcedure
@@ -50,10 +51,10 @@ export const gamesRouter = createTRPCRouter({
 
             const gameData: Game = {
               id: String(game.id),
-              teamA: game.teams.home.name,
-              teamB: game.teams.away.name,
-              oddsTeamA: homeOdds,
-              oddsTeamB: awayOdds,
+              homeTeam: game.teams.home.name,
+              awayTeam: game.teams.away.name,
+              oddsHomeTeam: homeOdds,
+              oddsAwayTeam: awayOdds,
               gameDate: new Date(game.date),
               status: game.status.short,
               winner: getWinningTeam(game).winner,
@@ -151,6 +152,9 @@ export const gamesRouter = createTRPCRouter({
       .from(games)
       .where(eq(games.status, "NS"));
 
-    return unstartedGames;
+    return unstartedGames.map((game) => ({
+      ...game,
+      gameData: game.gameData as GameResponse,
+    }));
   }),
 });

@@ -20,10 +20,10 @@ type Props = {
   };
   game: {
     id: string;
-    teamA: string;
-    teamB: string;
-    oddsTeamA: number;
-    oddsTeamB: number;
+    homeTeam: string;
+    awayTeam: string;
+    oddsHomeTeam: number;
+    oddsAwayTeam: number;
     gameDate: Date;
     status: string;
     winner: string;
@@ -32,13 +32,14 @@ type Props = {
 };
 
 function Bet({ bet, game }: Props) {
+  console.log(bet, game);
   const homeTeam = game.gameData.teams.home;
   const awayTeam = game.gameData.teams.away;
 
   const payout =
-    bet.chosenTeam === game.teamA
-      ? bet.amount * game.oddsTeamA
-      : bet.amount * game.oddsTeamB;
+    bet.chosenTeam === game.homeTeam
+      ? bet.amount * game.oddsHomeTeam
+      : bet.amount * game.oddsAwayTeam;
 
   const WinText = () => {
     return (
@@ -77,21 +78,24 @@ function Bet({ bet, game }: Props) {
     <Card className="flex flex-col items-center">
       <CardHeader>
         <CardTitle className="flex items-baseline gap-3">
-          <div
-            className={`${
-              bet.chosenTeam === "home" ? "border-2 border-green-500" : ""
-            } p-4`}
-          >
-            <TeamLogo teamName={homeTeam.name} teamLogo={homeTeam.logo} />
-          </div>
+          <TeamLogo
+            teamName={homeTeam.name}
+            teamLogo={homeTeam.logo}
+            target={{
+              use: bet.chosenTeam === homeTeam.name,
+              result: bet.result,
+            }}
+          />
+
           <div className="text-2xl font-bold">@</div>
-          <div
-            className={`${
-              bet.chosenTeam === "away" ? "border-2 border-green-500" : ""
-            } p-4`}
-          >
-            <TeamLogo teamName={awayTeam.name} teamLogo={awayTeam.logo} />
-          </div>
+          <TeamLogo
+            teamName={awayTeam.name}
+            teamLogo={awayTeam.logo}
+            target={{
+              use: bet.chosenTeam === awayTeam.name,
+              result: bet.result,
+            }}
+          />
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col">

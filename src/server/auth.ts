@@ -20,6 +20,8 @@ import {
   userTokens,
 } from "~/server/db/schema";
 
+const isDev = process.env.NODE_ENV === "development";
+
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -78,8 +80,10 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
     Github({
-      clientId: env.GITHUB_CLIENT_ID,
-      clientSecret: env.GITHUB_CLIENT_SECRET,
+      clientId: isDev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID,
+      clientSecret: isDev
+        ? env.GITHUB_CLIENT_SECRET_DEV
+        : env.GITHUB_CLIENT_SECRET,
     }),
     Google({
       clientId: env.GOOGLE_CLIENT_ID,

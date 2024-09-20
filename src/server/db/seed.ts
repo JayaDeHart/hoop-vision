@@ -206,10 +206,10 @@ export async function seed(email: string | null = null) {
   await db.insert(games).values([
     {
       id: "384995",
-      teamA: "Washington Mystics W",
-      teamB: "New York Liberty W",
-      oddsTeamA: 1.5,
-      oddsTeamB: 2.5,
+      homeTeam: "Washington Mystics W",
+      awayTeam: "New York Liberty W",
+      oddsHomeTeam: 1.5,
+      oddsAwayTeam: 2.5,
       gameDate: new Date(),
       status: "NS",
       winner: "pending",
@@ -217,10 +217,10 @@ export async function seed(email: string | null = null) {
     },
     {
       id: "415960",
-      teamA: "Felix Perez Cardozo",
-      teamB: "Dep. San Jose",
-      oddsTeamA: 1.7,
-      oddsTeamB: 2.2,
+      homeTeam: "Felix Perez Cardozo",
+      awayTeam: "Dep. San Jose",
+      oddsHomeTeam: 1.7,
+      oddsAwayTeam: 2.2,
       gameDate: new Date(Date.now() - 86400000), // Finished game
       status: "FT",
       winner: "Dep. San Jose",
@@ -228,10 +228,10 @@ export async function seed(email: string | null = null) {
     },
     {
       id: "419913",
-      teamA: "Dynamo MGTU",
-      teamB: "Dynamo Stavropol",
-      oddsTeamA: 1.7,
-      oddsTeamB: 2.2,
+      homeTeam: "Dynamo MGTU",
+      awayTeam: "Dynamo Stavropol",
+      oddsHomeTeam: 1.7,
+      oddsAwayTeam: 2.2,
       gameDate: new Date(Date.now() - 86400000), // Finished game
       status: "FT",
       winner: "Dynamo Stavropol",

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { type HomeAwayBet, type GameResponse } from "../types";
+import { useState } from "react";
+import { type GameResponse } from "../types";
 import {
   Card,
   CardContent,
@@ -16,22 +16,26 @@ import { useSession } from "next-auth/react";
 import { api } from "~/trpc/react";
 
 type Props = {
-  game: GameResponse;
-  odds: HomeAwayBet;
+  game: {
+    gameData: GameResponse;
+    id: string;
+    homeTeam: string;
+    awayTeam: string;
+    oddsHomeTeam: number;
+    oddsAwayTeam: number;
+    gameDate: Date;
+    status: string;
+    winner: string;
+  };
 };
 
-function Game({ game, odds }: Props) {
+function Game({ game }: Props) {
   const session = useSession();
   const tokens = session.data?.user.tokens ?? 0;
-  const homeTeam = game.teams.home;
-  const awayTeam = game.teams.away;
-  let homeOdds = null;
-  let awayOdds = null;
+  const homeOdds = game.oddsHomeTeam;
+  const awayOdds = game.oddsAwayTeam;
 
-  if (odds.bet) {
-    homeOdds = odds.bet.values.find((bet) => bet.value === "Home")?.odd;
-    awayOdds = odds.bet.values.find((bet) => bet.value === "Away")?.odd;
-  }
+  const gameData = game.gameData;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<"home" | "away" | null>(
@@ -59,11 +63,6 @@ function Game({ game, odds }: Props) {
   });
 
   const handlePlaceBet = async () => {
-    // check that team is selected
-    // check that amount is < user tokens
-    // check that game status is not started
-    // call placeBet api with params
-
     if (selectedTeam && amount && amount < tokens) {
       placeBet.mutate({
         amount: amount,
@@ -82,33 +81,35 @@ function Game({ game, odds }: Props) {
       <Card className="flex flex-col items-center">
         <CardHeader>
           <div className="flex items-center justify-center gap-2">
-            <span>{game.league.name}</span>
+            <span>{gameData.league.name}</span>
             <div
               className="relative h-[50px] w-[50px] rounded-full border-b-2"
               style={{
-                backgroundImage: `url(${game.league.logo})`,
+                backgroundImage: `url(${gameData.league.logo})`,
                 backgroundSize: "cover",
               }}
             ></div>
           </div>
           <CardTitle className="flex grid-cols-3 gap-3">
-            <TeamLogo teamName={homeTeam.name} teamLogo={homeTeam.logo} />
+            <TeamLogo
+              teamName={gameData.teams.home.name}
+              teamLogo={gameData.teams.home.logo}
+            />
             <div>At</div>
-            <TeamLogo teamName={awayTeam.name} teamLogo={awayTeam.logo} />
+            <TeamLogo
+              teamName={gameData.teams.away.name}
+              teamLogo={gameData.teams.away.logo}
+            />
           </CardTitle>
         </CardHeader>
         <CardContent className="relative z-10">
-          <p>@{game.time}</p>
+          <p>@{gameData.time}</p>
         </CardContent>
         <CardFooter className="relative z-10 flex flex-col">
-          {odds.bet ? (
-            <div className="flex flex-col">
-              <p>Home: {homeOdds}</p>
-              <p>Away: {awayOdds}</p>
-            </div>
-          ) : (
-            <p>No odds found</p>
-          )}
+          <div className="flex flex-col">
+            <p>Home: {homeOdds}</p>
+            <p>Away: {awayOdds}</p>
+          </div>
           <button onClick={() => setIsModalOpen(true)}>Place Bet</button>
         </CardFooter>
       </Card>
@@ -124,7 +125,10 @@ function Game({ game, odds }: Props) {
               }`}
               onClick={() => handleTeamSelect("home")}
             >
-              <TeamLogo teamName={homeTeam.name} teamLogo={homeTeam.logo} />
+              <TeamLogo
+                teamName={gameData.teams.home.name}
+                teamLogo={gameData.teams.home.logo}
+              />
               <div>{homeOdds}</div>
             </div>
             <div
@@ -135,7 +139,10 @@ function Game({ game, odds }: Props) {
               }`}
               onClick={() => handleTeamSelect("away")}
             >
-              <TeamLogo teamName={awayTeam.name} teamLogo={awayTeam.logo} />
+              <TeamLogo
+                teamName={gameData.teams.away.name}
+                teamLogo={gameData.teams.away.logo}
+              />
               <div>{awayOdds}</div>
             </div>
           </div>

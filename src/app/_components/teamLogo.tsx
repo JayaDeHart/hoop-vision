@@ -2,22 +2,35 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { GiConvergenceTarget } from "react-icons/gi";
 
 interface TeamLogoProps {
   teamName: string;
   teamLogo: string;
+  target?: {
+    use: boolean;
+    result: string | null;
+  };
 }
 
-const TeamLogo = ({ teamName, teamLogo }: TeamLogoProps) => {
+const TeamLogo = ({ teamName, teamLogo, target }: TeamLogoProps) => {
   const [logo, setLogo] = useState(teamLogo);
 
+  const colorMap = new Map([
+    ["win", "text-green-500"],
+    ["loss", "text-red-500"],
+    ["pending", "text-gray-500"],
+    [null, "text-gray-500"],
+  ]);
+
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="relative flex flex-col items-center justify-center">
       <div
+        className="relative rounded-full border-2 border-gray-300 bg-white shadow-md"
         style={{
-          position: "relative",
-          width: "100px",
-          height: "100px",
+          width: "120px",
+          height: "120px",
+          overflow: "hidden",
         }}
       >
         <Image
@@ -26,9 +39,16 @@ const TeamLogo = ({ teamName, teamLogo }: TeamLogoProps) => {
           fill
           style={{ objectFit: "cover" }}
           onError={() => setLogo("/fallback_logo.jpg")}
+          className="rounded-full"
         />
       </div>
-      <div className="text-center">{teamName}</div>
+      {target?.use && (
+        <GiConvergenceTarget
+          className={`absolute opacity-30 ${colorMap.get(target.result)}`}
+          size={200}
+        />
+      )}
+      <div className="mt-2 text-center">{teamName}</div>
     </div>
   );
 };
