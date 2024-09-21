@@ -3,9 +3,9 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
 import { games, bets, userTokens } from "~/server/db/schema";
 import { eq, sql, and, inArray } from "drizzle-orm";
-import { getGamesWithOdds } from "~/app/api/third-party/basketball-api";
+import { getGamesWithOdds } from "~/app/api/_third-party/basketball-api";
 import { type InferInsertModel } from "drizzle-orm";
-import { getWinningTeam } from "~/app/api/third-party/basketball-api";
+import { getWinningTeam } from "~/app/api/_third-party/basketball-api";
 import { GameResponse } from "~/app/types";
 
 export const gamesRouter = createTRPCRouter({
