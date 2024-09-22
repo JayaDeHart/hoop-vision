@@ -141,9 +141,40 @@ export async function getGamesWithOdds(triggerManualUpdate: boolean) {
       : getMockGamesWithOdds();
   } else {
     const games = await getTodaysGames();
-    const odds = await getOddsByGames(games.map((game) => game.id));
+    const unstartedGames = games.filter((game) => game.status.short === "NS");
+    const otherGames = games.filter((game) => game.status.short !== "NS");
+    const unstartedGamesOdds = await getOddsByGames(
+      unstartedGames.map((game) => game.id),
+    );
+    const otherGamesOdds = createSyntheticOdds(
+      otherGames.map((game) => game.id),
+    );
+    const odds = [...unstartedGamesOdds, ...otherGamesOdds];
     return linkGamesWithBets(games, odds);
   }
+}
+
+export function createSyntheticOdds(ids: number[]): HomeAwayBet[] {
+  const odds = ids.map((id) => ({
+    game: id,
+    bookmaker: "None",
+    bet: {
+      id: 1,
+      name: "Home/Away",
+      values: [
+        {
+          value: "Home",
+          odd: "1.00",
+        },
+        {
+          value: "Away",
+          odd: "1.00",
+        },
+      ],
+    },
+  }));
+
+  return odds;
 }
 
 export function getWinningTeam(game: GameResponse): {
@@ -176,9 +207,3 @@ export function getWinningTeam(game: GameResponse): {
     };
   }
 }
-
-//we can rewrite this workflow to be much more effecient
-//we only need to get the odds for games that are NS
-//for all others we can just get the game info
-//we need to update the db model to allow for storing games without odds
-//but there will be no negative impact on not getting odds for games that are over, because we theoretically should have them in our DB already
