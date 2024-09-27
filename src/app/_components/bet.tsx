@@ -7,6 +7,7 @@ import {
 } from "../../components/ui/card";
 import { type GameResponse } from "../types";
 import TeamLogo from "./teamLogo";
+import { hookPropertyMap } from "next/dist/server/require-hook";
 
 type Props = {
   bet: {
@@ -75,7 +76,7 @@ function Bet({ bet, game }: Props) {
   ]);
 
   return (
-    <Card className="flex flex-col items-center">
+    <Card className="flex flex-col items-center justify-between xl:h-96 xl:w-96">
       <CardHeader>
         <CardTitle className="flex items-baseline gap-3">
           <TeamLogo
@@ -85,6 +86,7 @@ function Bet({ bet, game }: Props) {
               use: bet.chosenTeam === homeTeam.name,
               result: bet.result,
             }}
+            odds={game.oddsHomeTeam}
           />
 
           <div className="text-2xl font-bold">@</div>
@@ -95,6 +97,7 @@ function Bet({ bet, game }: Props) {
               use: bet.chosenTeam === awayTeam.name,
               result: bet.result,
             }}
+            odds={game.oddsAwayTeam}
           />
         </CardTitle>
       </CardHeader>

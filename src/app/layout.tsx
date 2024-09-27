@@ -22,11 +22,11 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} min-h-screen bg-slate-50`}
     >
-      <body>
+      <body className="">
         <TRPCReactProvider>
           <AuthProvider>
             <TopNav />
-            <div className="bg-slate-50 p-24">{children}</div>
+            <div className="bg-slate-50 px-36 py-24">{children}</div>
             <BottomNav />
           </AuthProvider>
         </TRPCReactProvider>

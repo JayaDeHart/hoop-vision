@@ -14,6 +14,7 @@ import { Input } from "~/components/ui/input";
 import TeamLogo from "./teamLogo";
 import { useSession } from "next-auth/react";
 import { api } from "~/trpc/react";
+import { Button } from "~/components/ui/button";
 
 type Props = {
   game: {
@@ -77,9 +78,9 @@ function Game({ game }: Props) {
   };
 
   return (
-    <div>
-      <Card className="flex flex-col items-center">
-        <CardHeader>
+    <div className="">
+      <Card className="flex flex-col items-center justify-between xl:h-96 xl:w-96">
+        <CardHeader className="p-2">
           <div className="flex items-center justify-center gap-2">
             <span>{gameData.league.name}</span>
             <div
@@ -90,32 +91,30 @@ function Game({ game }: Props) {
               }}
             ></div>
           </div>
-          <CardTitle className="flex grid-cols-3 gap-3">
+          <CardTitle className="flex items-baseline gap-3">
             <TeamLogo
               teamName={gameData.teams.home.name}
               teamLogo={gameData.teams.home.logo}
+              odds={homeOdds}
             />
-            <div>At</div>
+            <div className="text-2xl font-bold">@</div>
             <TeamLogo
               teamName={gameData.teams.away.name}
               teamLogo={gameData.teams.away.logo}
+              odds={awayOdds}
             />
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative z-10">
+        <CardContent className="relative z-10 pb-2">
           <p>@{gameData.time}</p>
         </CardContent>
         <CardFooter className="relative z-10 flex flex-col">
-          <div className="flex flex-col">
-            <p>Home: {homeOdds}</p>
-            <p>Away: {awayOdds}</p>
-          </div>
-          <button onClick={() => setIsModalOpen(true)}>Place Bet</button>
+          <Button onClick={() => setIsModalOpen(true)}>Place Bet</Button>
         </CardFooter>
       </Card>
 
       <Modal isOpen={isModalOpen} onClose={handleClose} width="md">
-        <div className="flex max-w-md flex-col gap-4">
+        <div className="flex max-w-md flex-col items-center gap-4">
           <div className="flex justify-between">
             <div
               className={`cursor-pointer p-4 text-center ${
@@ -128,8 +127,8 @@ function Game({ game }: Props) {
               <TeamLogo
                 teamName={gameData.teams.home.name}
                 teamLogo={gameData.teams.home.logo}
+                odds={homeOdds}
               />
-              <div>{homeOdds}</div>
             </div>
             <div
               className={`cursor-pointer p-4 text-center ${
@@ -142,22 +141,30 @@ function Game({ game }: Props) {
               <TeamLogo
                 teamName={gameData.teams.away.name}
                 teamLogo={gameData.teams.away.logo}
+                odds={awayOdds}
               />
-              <div>{awayOdds}</div>
             </div>
           </div>
-          <Input
-            type="number"
-            placeholder={`Available tokens: ${tokens}`}
-            onChange={handleAmountChange}
-          />
-          <button
-            className="rounded-full border-2 border-slate-200"
-            onClick={handlePlaceBet}
-            disabled={placeBet.isPending}
-          >
-            Place Bet
-          </button>
+          <div className="flex gap-4">
+            <Input
+              type="text"
+              pattern="[0-9]*"
+              placeholder={`Available tokens: ${tokens}`}
+              onChange={handleAmountChange}
+              onKeyDown={(e) => {
+                if (!/[0-9]/.test(e.key) && e.key !== "Backspace") {
+                  e.preventDefault();
+                }
+              }}
+            />
+            <Button
+              onClick={handlePlaceBet}
+              disabled={placeBet.isPending}
+              className="max-w-md text-center"
+            >
+              Place Bet
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>
