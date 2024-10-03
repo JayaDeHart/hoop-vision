@@ -7,7 +7,6 @@ import {
 } from "../../components/ui/card";
 import { type GameResponse } from "../types";
 import TeamLogo from "./teamLogo";
-import { hookPropertyMap } from "next/dist/server/require-hook";
 
 type Props = {
   bet: {

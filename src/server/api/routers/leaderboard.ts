@@ -1,13 +1,10 @@
-import { z } from "zod";
 import { desc } from "drizzle-orm";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
-import { db } from "~/server/db";
-
 export const leaderBoardRouter = createTRPCRouter({
-  getTokens: publicProcedure.query(async () => {
-    const users = await db.query.userTokens.findMany({
+  getTokens: publicProcedure.query(async ({ ctx }) => {
+    const users = await ctx.db.query.userTokens.findMany({
       orderBy: (userTokens) => [desc(userTokens.tokens)],
     });
     return {
@@ -15,8 +12,8 @@ export const leaderBoardRouter = createTRPCRouter({
     };
   }),
 
-  getMaxWinnings: publicProcedure.query(async () => {
-    const users = await db.query.leaderboard.findMany({
+  getMaxWinnings: publicProcedure.query(async ({ ctx }) => {
+    const users = await ctx.db.query.leaderboard.findMany({
       orderBy: (leaderboard) => [desc(leaderboard.lifetimeWinnings)],
     });
     return {

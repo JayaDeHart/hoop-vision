@@ -69,6 +69,7 @@ function Game({ game }: Props) {
         amount: amount,
         game: String(game.id),
         team: selectedTeam,
+        odds: selectedTeam === "home" ? game.oddsHomeTeam : game.oddsAwayTeam,
       });
     }
   };

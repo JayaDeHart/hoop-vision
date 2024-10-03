@@ -1,10 +1,15 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { db } from "~/server/db";
 import { bets } from "~/server/db/schema";
 import { type InferInsertModel } from "drizzle-orm";
 import { games, userTokens } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
+import {
+  getGameById,
+  getWinningTeam,
+} from "~/app/api/_third-party/basketball-api";
+import { updateBet } from "~/lib/api/bets";
 
 export const betsRouter = createTRPCRouter({
   placeBet: protectedProcedure
@@ -13,13 +18,14 @@ export const betsRouter = createTRPCRouter({
         team: z.string(),
         amount: z.number(),
         game: z.string(),
+        odds: z.number(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
       const { session } = ctx;
 
       // Check if the game exists and hasn't started
-      const game = await db
+      const game = await ctx.db
         .select()
         .from(games)
         .where(eq(games.id, input.game))
@@ -27,6 +33,11 @@ export const betsRouter = createTRPCRouter({
 
       console.log(game);
       console.log(game[0]?.status);
+
+      // const test = await ctx.db
+      //   .select()
+      //   .from(userTokens)
+      //   .where(eq(userTokens.userId, session.user.id));
 
       if (game.length === 0) {
         throw new Error("Game not found");
@@ -38,7 +49,7 @@ export const betsRouter = createTRPCRouter({
       }
 
       // Check if the user has enough tokens
-      const tokens = await db
+      const tokens = await ctx.db
         .select()
         .from(userTokens)
         .where(eq(userTokens.userId, session.user.id))
@@ -54,7 +65,7 @@ export const betsRouter = createTRPCRouter({
 
       // Deduct tokens from user
       const newTokens = tokens[0].tokens - input.amount;
-      await db
+      await ctx.db
         .update(userTokens)
         .set({ tokens: newTokens })
         .where(eq(userTokens.userId, session.user.id));
@@ -66,9 +77,10 @@ export const betsRouter = createTRPCRouter({
         gameId: input.game,
         amount: input.amount,
         chosenTeam: input.team,
+        odds: input.odds,
       };
       try {
-        await db.insert(bets).values(bet);
+        await ctx.db.insert(bets).values(bet);
       } catch (e) {
         console.log(e);
         throw new Error("Failed to place bet");
@@ -79,6 +91,29 @@ export const betsRouter = createTRPCRouter({
         bet: bet,
       };
     }),
+
+  updateBets: publicProcedure.mutation(async ({ ctx }) => {
+    const unfinishedBets = await ctx.db
+      .select()
+      .from(bets)
+      .where(eq(bets.result, "pending"));
+
+    const unfinished = unfinishedBets.length;
+    let updated = 0;
+
+    await Promise.all(
+      unfinishedBets.map(async (bet) => {
+        const game = await getGameById(Number(bet.gameId));
+        if (game && game.status.short === "FT") {
+          const winner = getWinningTeam(game);
+          await updateBet(bet, winner, ctx.db);
+          updated++;
+        }
+      }),
+    );
+    console.log(`Updated ${updated} out of ${unfinished} bets`);
+    return { message: `Updated ${updated} out of ${unfinished} bets` };
+  }),
 });
 
 //bets workflow: check game not started, check user has enough money, deduct money from user, add bet to db, return bet

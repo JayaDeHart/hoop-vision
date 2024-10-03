@@ -91,3 +91,19 @@ export type HomeAwayBet = {
     values: Bet[];
   } | null;
 };
+
+export type DBBet = {
+  id: string;
+  userId: string;
+  gameId: string;
+  amount: number;
+  chosenTeam: string;
+  result: string | null;
+  payout: number | null;
+  odds: number;
+};
+
+export type Winner = {
+  winner: string;
+  position: string | null;
+};

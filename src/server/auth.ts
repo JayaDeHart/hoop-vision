@@ -19,8 +19,16 @@ import {
   verificationTokens,
   userTokens,
 } from "~/server/db/schema";
+import { OAuthConfig, Provider } from "next-auth/providers/index";
 
 const isDev = process.env.NODE_ENV === "development";
+const flag = process.env.FLAG;
+console.log(
+  flag,
+  process.env.NEXTAUTH_URL,
+  process.env.GITHUB_CLIENT_ID,
+  process.env.GITHUB_CLIENT_SECRET,
+);
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -43,6 +51,23 @@ declare module "next-auth" {
   //   // role: UserRole;
   // }
 }
+
+const providers: Provider[] = [
+  DiscordProvider({
+    clientId: env.DISCORD_CLIENT_ID,
+    clientSecret: env.DISCORD_CLIENT_SECRET,
+  }),
+  Github({
+    clientId: isDev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID,
+    clientSecret: isDev
+      ? env.GITHUB_CLIENT_SECRET_DEV
+      : env.GITHUB_CLIENT_SECRET,
+  }),
+  Google({
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+  }),
+];
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -74,22 +99,7 @@ export const authOptions: NextAuthOptions = {
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }) as Adapter,
-  providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
-    Github({
-      clientId: isDev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID,
-      clientSecret: isDev
-        ? env.GITHUB_CLIENT_SECRET_DEV
-        : env.GITHUB_CLIENT_SECRET,
-    }),
-    Google({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],
+  providers,
   events: {
     createUser: async ({ user }) => {
       await db.insert(userTokens).values({
@@ -97,6 +107,10 @@ export const authOptions: NextAuthOptions = {
         tokens: 1000,
       });
     },
+  },
+  debug: true,
+  pages: {
+    signIn: "/auth/signin",
   },
 };
 

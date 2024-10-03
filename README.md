@@ -16,7 +16,7 @@ I used tRPC for all of the api routing that involves my database. This integrate
 
 ### Auth
 
-I used next-auth. It takes care of pretty much everything out of the box.
+I used next-auth. next-auth is pretty opinionated with regards to Oauth over credentialled logins, so that is the path that I took. Once you've configured your Oauth providers, next-auth handles things like accounts, sessions and tokens out of the box. It integrates really well with tRPC in creating protected API routes.
 
 ### Styling + Components
 
@@ -43,3 +43,17 @@ I used tailwind css and shadcn.
 2. You can use a cron job to schedule it. vercel.json contains the template for doing that, but free tier vercel accounts can only schedule crons with a frequency of 1x/day or slower. Obviously this would be insufficient, as users would be able to bet on games that had already transpired.
 
 3. I used qstash: https://upstash.com/docs/qstash/overall/getstarted. You can schedule api calls with a much higher frequency for free. The other limit you will run into is the basketball api query limit of 100 calls per day, so make sure you're not scheduling them too frequently.
+
+## Resources / References
+
+- https://create.t3.gg/en/introduction
+
+  The T3 stack is a collection of libraries and tools that outline one possible structure of a modern typescript project. It also comes with a CLI for bootstrapping projects easily.
+
+- https://www.refactoringui.com/
+
+  Refactoring UI is an awesome and concise guide on designing web UIs written by the creators of Tailwind. I tried to reference it as much as possible when designing this project.
+
+- https://github.com/goldbergyoni/nodebestpractices
+
+  A great guide for handling best practices in node / typescript applications.

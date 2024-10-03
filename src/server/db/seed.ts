@@ -414,6 +414,7 @@ export async function seed(email: string | null = null) {
       chosenTeam: "Felix Perez Cardozo", // Team A from Game 2
       result: "loss", // Chose Team A, but Team B won
       payout: 0,
+      odds: 1.7,
     },
     {
       id: "2",
@@ -423,6 +424,7 @@ export async function seed(email: string | null = null) {
       chosenTeam: "Dep. San Jose", // Team B from Game 2
       result: "win", // Chose Team B, which won
       payout: 220, // Example payout based on odds of 2.2
+      odds: 2.2,
     },
     {
       id: "3",
@@ -432,6 +434,7 @@ export async function seed(email: string | null = null) {
       chosenTeam: "Washington Mystics W", // Team A from Game 1
       result: "pending", // Game hasn't started yet
       payout: 0,
+      odds: 1.5,
     },
   ]);
 

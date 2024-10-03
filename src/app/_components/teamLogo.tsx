@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { GiConvergenceTarget } from "react-icons/gi";
 import { FaCaretDown } from "react-icons/fa";
 
 import {

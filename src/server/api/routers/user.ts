@@ -12,7 +12,7 @@ import { type GameResponse } from "~/app/types";
 export const userRouter = createTRPCRouter({
   getUserTokens: protectedProcedure.query(async ({ ctx }) => {
     const { session } = ctx;
-    const tokens = await db
+    const tokens = await ctx.db
       .select()
       .from(userTokens)
       .where(eq(userTokens.userId, session.user.id));
@@ -23,7 +23,7 @@ export const userRouter = createTRPCRouter({
   getUserBets: protectedProcedure.query(async ({ ctx }) => {
     const { session } = ctx;
 
-    const userBetsWithGames = await db
+    const userBetsWithGames = await ctx.db
       .select({
         bet: bets, // Select all columns from bets as 'bet'
         game: games, // Select all columns from games as 'game'

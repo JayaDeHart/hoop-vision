@@ -1,23 +1,25 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
-import { games, bets, userTokens } from "~/server/db/schema";
-import { eq, sql, and, inArray } from "drizzle-orm";
+import { games, bets } from "~/server/db/schema";
+import { eq, and, inArray, isNotNull } from "drizzle-orm";
 import { getGamesWithOdds } from "~/app/api/_third-party/basketball-api";
 import { type InferInsertModel } from "drizzle-orm";
 import { getWinningTeam } from "~/app/api/_third-party/basketball-api";
-import { GameResponse } from "~/app/types";
+import { type GameResponse } from "~/app/types";
+import { lt } from "drizzle-orm";
+import { updateBet } from "~/lib/api/bets";
 
 export const gamesRouter = createTRPCRouter({
   updateGames: publicProcedure
     .input(z.object({ triggerManualUpdate: z.boolean().optional() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { triggerManualUpdate = false } = input;
       try {
         const gamesWithOdds = await getGamesWithOdds(triggerManualUpdate);
 
         for (const { game, odds } of gamesWithOdds) {
-          const existingGame = await db
+          const existingGame = await ctx.db
             .select()
             .from(games)
             .where(eq(games.id, game.id.toString()))
@@ -29,7 +31,7 @@ export const gamesRouter = createTRPCRouter({
               existingGame[0] &&
               existingGame[0].status !== game.status.short
             ) {
-              await db
+              await ctx.db
                 .update(games)
                 .set({
                   status: game.status.short,
@@ -61,7 +63,7 @@ export const gamesRouter = createTRPCRouter({
               gameData: game,
             };
 
-            await db.insert(games).values(gameData);
+            await ctx.db.insert(games).values(gameData);
           }
         }
 
@@ -75,13 +77,13 @@ export const gamesRouter = createTRPCRouter({
           String(game.id),
         );
 
-        const unfinishedBets = await db
+        const unfinishedBets = await ctx.db
           .select()
           .from(bets)
           .where(
             and(
-              eq(bets.result, "pending"), // Check if the bet result is pending
-              inArray(bets.gameId, completedGameIds), // Check if the gameId is in the list of completedGameIds
+              eq(bets.result, "pending"),
+              inArray(bets.gameId, completedGameIds),
             ),
           );
 
@@ -92,52 +94,10 @@ export const gamesRouter = createTRPCRouter({
             );
             if (game) {
               const winner = getWinningTeam(game.game);
-              if (winner.winner === bet.chosenTeam) {
-                const odds = game.odds.bet?.values.find(
-                  (bet) => bet.value === winner.position,
-                );
-                if (odds) {
-                  const payout = bet.amount * Number(odds.value);
-
-                  // update bet with win + payout
-                  await db
-                    .update(bets)
-                    .set({
-                      result: "win",
-                      payout: payout,
-                    })
-                    .where(eq(bets.id, bet.id));
-
-                  // update user tokens with payout
-                  const tokens = await db
-                    .select()
-                    .from(userTokens)
-                    .where(eq(userTokens.userId, bet.userId));
-                  if (tokens[0]) {
-                    const newTokens = tokens[0].tokens + payout;
-                    await db
-                      .update(userTokens)
-                      .set({ tokens: newTokens })
-                      .where(eq(userTokens.userId, bet.userId));
-                  }
-                }
-              } else {
-                // update bet with loss
-                await db
-                  .update(bets)
-                  .set({
-                    result: "loss",
-                    payout: 0,
-                  })
-                  .where(eq(bets.id, bet.id));
-              }
+              await updateBet(bet, winner, ctx.db);
             }
           }),
         );
-
-        //map through unfinished bets
-        //update each bet with win or loss
-        //update user tokens in case of win
 
         return { success: true, games: gamesWithOdds };
       } catch (error) {
@@ -146,11 +106,37 @@ export const gamesRouter = createTRPCRouter({
       }
     }),
 
-  getUnstartedGames: publicProcedure.query(async () => {
-    const unstartedGames = await db
+  getUnstartedGames: publicProcedure.query(async ({ ctx }) => {
+    //sometimes games are missed by the update loop. If a game is more than a day old we can safely assume it is over and clean it up. Skip this step in dev so we're not cleaning up our seed data.
+
+    if (process.env.NODE_ENV === "production") {
+      const today = new Date();
+      const oneDayAgo = new Date(today);
+      oneDayAgo.setDate(today.getDate() - 1);
+
+      const staleGames = await ctx.db
+        .select()
+        .from(games)
+        .where(lt(games.gameDate, oneDayAgo));
+
+      const updatedGames = staleGames.map((game) => ({
+        ...game,
+        status: "FT",
+      }));
+
+      await ctx.db.insert(games).values(updatedGames);
+    }
+
+    const unstartedGames = await ctx.db
       .select()
       .from(games)
-      .where(eq(games.status, "NS"));
+      .where(
+        and(
+          eq(games.status, "NS"),
+          isNotNull(games.oddsAwayTeam),
+          isNotNull(games.oddsHomeTeam),
+        ),
+      );
 
     return unstartedGames.map((game) => ({
       ...game,

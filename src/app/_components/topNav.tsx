@@ -7,6 +7,9 @@ import {
 } from "../../components/ui/navigation-menu";
 import { FaBasketball } from "react-icons/fa6";
 import Link from "next/link";
+import { Button } from "~/components/ui/button";
+import { signOut } from "next-auth/react";
+import SignOut from "./signout";
 
 type Props = {};
 
@@ -32,6 +35,9 @@ function TopNav({}: Props) {
               Profile
             </NavigationMenuLink>
           </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <SignOut />
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

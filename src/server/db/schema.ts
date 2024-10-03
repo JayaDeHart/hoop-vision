@@ -152,6 +152,7 @@ export const bets = createTable("bets", {
   chosenTeam: varchar("chosen_team", { length: 255 }).notNull(),
   result: varchar("result", { length: 50 }).default("pending"), // "win", "loss", or "pending"
   payout: doublePrecision("payout").default(0), // Amount of winnings (0 if lost)
+  odds: doublePrecision("odds").notNull(),
 });
 
 export const betsRelations = relations(bets, ({ one }) => ({
