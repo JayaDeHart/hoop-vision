@@ -2,10 +2,9 @@ import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { drizzle as postgresDrizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../src/server/db/schema";
-import { createCallerFactory, createTRPCContext } from "../src/server/api/trpc";
-import { headers } from "next/headers";
 import { appRouter } from "../src/server/api/root";
 import { eq } from "drizzle-orm";
+import { createCallerFactory, createTRPCContext } from "../src/server/api/trpc";
 
 describe("Bets API", () => {
   test("Should add a new test to the database when placeBet is called", async () => {
