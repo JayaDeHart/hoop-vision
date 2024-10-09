@@ -9,8 +9,8 @@ import DiscordProvider from "next-auth/providers/discord";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 
-import { env } from "~/env";
-import { db } from "~/server/db";
+import { env } from "../env";
+import { db } from "../server/db";
 import { eq } from "drizzle-orm";
 import {
   accounts,
@@ -18,7 +18,7 @@ import {
   users,
   verificationTokens,
   userTokens,
-} from "~/server/db/schema";
+} from "../server/db/schema";
 import { OAuthConfig, Provider } from "next-auth/providers/index";
 
 const isDev = process.env.NODE_ENV === "development";

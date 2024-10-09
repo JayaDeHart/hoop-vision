@@ -38,11 +38,8 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
-  // "ts-node": {
-  //   "compilerOptions": {
-  //     "module": "CommonJS"
-  //   },
-  //   "esm": true
-  // }
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "esm": true
+  }
 }

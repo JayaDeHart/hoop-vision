@@ -1,5 +1,5 @@
-import { type DBBet, type Winner } from "~/app/types";
-import { bets, userTokens } from "~/server/db/schema";
+import { type DBBet, type Winner } from "../../app/types";
+import { bets, userTokens } from "../../server/db/schema";
 import { eq } from "drizzle-orm";
 import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { type VercelPgDatabase } from "drizzle-orm/vercel-postgres";

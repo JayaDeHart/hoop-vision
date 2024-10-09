@@ -1,15 +1,15 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { db } from "~/server/db";
-import { bets } from "~/server/db/schema";
+import { bets } from "../../../server/db/schema";
 import { type InferInsertModel } from "drizzle-orm";
-import { games, userTokens } from "~/server/db/schema";
+import { games, userTokens } from "../../../server/db/schema";
 import { eq } from "drizzle-orm";
 import {
   getGameById,
   getWinningTeam,
-} from "~/app/api/_third-party/basketball-api";
-import { updateBet } from "~/lib/api/bets";
+} from "../../../app/api/_third-party/basketball-api";
+import { updateBet } from "../../../lib/api/bets";
 
 export const betsRouter = createTRPCRouter({
   placeBet: protectedProcedure

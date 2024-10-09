@@ -1,6 +1,6 @@
 import { desc } from "drizzle-orm";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const leaderBoardRouter = createTRPCRouter({
   getTokens: publicProcedure.query(async ({ ctx }) => {
