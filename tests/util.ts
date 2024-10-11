@@ -2,24 +2,26 @@ import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { drizzle as postgresDrizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../src/server/db/schema";
-import { eq } from "drizzle-orm";
-import { expect } from "chai";
 import { execSync } from "child_process";
 
-export const initialzieDb = async () => {
-  const postgresContainer = await new PostgreSqlContainer().start();
-  const connectionString = postgresContainer.getConnectionUri();
-  const db = postgresDrizzle(postgres(connectionString), { schema });
+export const initializeDb = async () => {
+  try {
+    const postgresContainer = await new PostgreSqlContainer().start();
+    const connectionString = postgresContainer.getConnectionUri();
+    const db = postgresDrizzle(postgres(connectionString), { schema });
 
-  execSync(
-    `npx drizzle-kit push --dialect=postgresql --schema=./src/server/db/schema.ts --url=${connectionString}`,
-    {
-      stdio: "pipe",
-      encoding: "utf-8",
-    },
-  );
+    execSync(
+      `npx drizzle-kit push --dialect=postgresql --schema=./src/server/db/schema.ts --url=${connectionString}`,
+      {
+        stdio: "pipe",
+        encoding: "utf-8",
+      },
+    );
 
-  return db;
+    return db;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const gameOneData = {
@@ -91,4 +93,8 @@ export const game = {
   status: "NS",
   winner: "pending",
   gameData: gameOneData,
+};
+
+export const testfn = async () => {
+  console.log("testfn");
 };

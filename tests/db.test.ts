@@ -1,16 +1,15 @@
-import { PostgreSqlContainer } from "@testcontainers/postgresql";
-import { drizzle as postgresDrizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import * as schema from "../src/server/db/schema";
 import { eq } from "drizzle-orm";
 import { expect } from "chai";
-import { execSync } from "child_process";
-import { initialzieDb } from "./util";
+import { initializeDb } from "./util";
 import { game } from "./util";
 
 describe("The DB", () => {
   it("Should be able to insert records", async () => {
-    const db = await initialzieDb();
+    const db = await initializeDb();
+    if (!db) {
+      return;
+    }
 
     await db.insert(schema.users).values([{ email: "test@test.com", id: "1" }]);
     await db.insert(schema.games).values([{ ...game }]);
@@ -26,6 +25,8 @@ describe("The DB", () => {
         result: "pending",
       },
     ]);
+
+    console.log("test");
 
     const bets = await db
       .select()

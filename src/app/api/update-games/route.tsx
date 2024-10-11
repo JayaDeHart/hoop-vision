@@ -6,9 +6,6 @@ import { appRouter } from "~/server/api/root";
 import { createTRPCContext, createCallerFactory } from "~/server/api/trpc";
 
 export async function GET(req: NextRequest) {
-  console.log("hello!!");
-  console.log(req.nextUrl.pathname);
-
   try {
     const context = await createTRPCContext({ headers: req.headers });
     const createCaller = createCallerFactory(appRouter);
@@ -33,9 +30,6 @@ export async function GET(req: NextRequest) {
 
 //this is a hacky way to work around the fact that QStash only sends POST requests
 export async function POST(req: NextRequest) {
-  console.log("hello!!");
-  console.log(req.nextUrl.pathname);
-
   try {
     const context = await createTRPCContext({ headers: req.headers });
     const createCaller = createCallerFactory(appRouter);

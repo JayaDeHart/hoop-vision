@@ -34,11 +34,6 @@ export const betsRouter = createTRPCRouter({
       console.log(game);
       console.log(game[0]?.status);
 
-      // const test = await ctx.db
-      //   .select()
-      //   .from(userTokens)
-      //   .where(eq(userTokens.userId, session.user.id));
-
       if (game.length === 0) {
         throw new Error("Game not found");
       }
