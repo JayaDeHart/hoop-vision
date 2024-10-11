@@ -9,8 +9,8 @@ import DiscordProvider from "next-auth/providers/discord";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 
-import { env } from "~/env";
-import { db } from "~/server/db";
+import { env } from "../env";
+import { db } from "../server/db";
 import { eq } from "drizzle-orm";
 import {
   accounts,
@@ -18,12 +18,12 @@ import {
   users,
   verificationTokens,
   userTokens,
-} from "~/server/db/schema";
-import { OAuthConfig, Provider } from "next-auth/providers/index";
+} from "../server/db/schema";
 
 const isDev = process.env.NODE_ENV === "development";
 const flag = process.env.FLAG;
 console.log(
+  "here",
   flag,
   process.env.NEXTAUTH_URL,
   process.env.GITHUB_CLIENT_ID,
@@ -51,23 +51,6 @@ declare module "next-auth" {
   //   // role: UserRole;
   // }
 }
-
-const providers: Provider[] = [
-  DiscordProvider({
-    clientId: env.DISCORD_CLIENT_ID,
-    clientSecret: env.DISCORD_CLIENT_SECRET,
-  }),
-  Github({
-    clientId: isDev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID,
-    clientSecret: isDev
-      ? env.GITHUB_CLIENT_SECRET_DEV
-      : env.GITHUB_CLIENT_SECRET,
-  }),
-  Google({
-    clientId: env.GOOGLE_CLIENT_ID,
-    clientSecret: env.GOOGLE_CLIENT_SECRET,
-  }),
-];
 
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
@@ -99,7 +82,22 @@ export const authOptions: NextAuthOptions = {
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }) as Adapter,
-  providers,
+  providers: [
+    DiscordProvider({
+      clientId: env.DISCORD_CLIENT_ID,
+      clientSecret: env.DISCORD_CLIENT_SECRET,
+    }),
+    Github({
+      clientId: isDev ? env.GITHUB_CLIENT_ID_DEV : env.GITHUB_CLIENT_ID,
+      clientSecret: isDev
+        ? env.GITHUB_CLIENT_SECRET_DEV
+        : env.GITHUB_CLIENT_SECRET,
+    }),
+    Google({
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
   events: {
     createUser: async ({ user }) => {
       await db.insert(userTokens).values({

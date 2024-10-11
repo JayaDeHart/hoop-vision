@@ -3,7 +3,7 @@ import { drizzle as postgresDrizzle } from "drizzle-orm/postgres-js";
 import { sql as vercelSql } from "@vercel/postgres";
 import postgres from "postgres"; // for local postgres connection
 import * as schema from "./schema";
-import { env } from "~/env";
+import { env } from "../../env";
 
 const isDev = process.env.NODE_ENV === "development";
 

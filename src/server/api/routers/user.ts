@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { desc } from "drizzle-orm";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "../../../server/api/trpc";
 
 import { db } from "~/server/db";
-import { userTokens } from "~/server/db/schema";
+import { userTokens } from "../../../server/db/schema";
 import { eq } from "drizzle-orm";
-import { bets, games } from "~/server/db/schema";
-import { type GameResponse } from "~/app/types";
+import { bets, games } from "../../../server/db/schema";
+import { type GameResponse } from "../../../app/types";
 
 export const userRouter = createTRPCRouter({
   getUserTokens: protectedProcedure.query(async ({ ctx }) => {
