@@ -3,16 +3,12 @@ import { bets, userTokens } from "../../server/db/schema";
 import { eq } from "drizzle-orm";
 import { type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { type VercelPgDatabase } from "drizzle-orm/vercel-postgres";
+import type * as schema from "../../server/db/schema";
+
 export const updateBet = async (
   bet: DBBet,
   winner: Winner,
-  db:
-    | PostgresJsDatabase<
-        typeof import("/home/jayadehart/projects/hoop-vision/src/server/db/schema")
-      >
-    | VercelPgDatabase<
-        typeof import("/home/jayadehart/projects/hoop-vision/src/server/db/schema")
-      >,
+  db: PostgresJsDatabase<typeof schema> | VercelPgDatabase<typeof schema>,
 ) => {
   if (winner.winner === bet.chosenTeam) {
     const odds = bet.odds;
