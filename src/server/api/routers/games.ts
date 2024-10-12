@@ -119,12 +119,12 @@ export const gamesRouter = createTRPCRouter({
         .from(games)
         .where(lt(games.gameDate, oneDayAgo));
 
-      const updatedGames = staleGames.map((game) => ({
-        ...game,
-        status: "FT",
-      }));
-
-      await ctx.db.insert(games).values(updatedGames);
+      for (const game of staleGames) {
+        await ctx.db
+          .update(games)
+          .set({ status: "FT" })
+          .where(eq(games.id, game.id));
+      }
     }
 
     const unstartedGames = await ctx.db
