@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { set, z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../../../server/api/trpc";
 import { db } from "~/server/db";
 import { games, bets } from "../../../server/db/schema";
@@ -107,26 +107,9 @@ export const gamesRouter = createTRPCRouter({
     }),
 
   getUnstartedGames: publicProcedure.query(async ({ ctx }) => {
-    //sometimes games are missed by the update loop. If a game is more than a day old we can safely assume it is over and clean it up. Skip this step in dev so we're not cleaning up our seed data.
-
-    if (process.env.NODE_ENV === "production") {
-      const today = new Date();
-      const oneDayAgo = new Date(today);
-      oneDayAgo.setDate(today.getDate() - 1);
-
-      const staleGames = await ctx.db
-        .select()
-        .from(games)
-        .where(lt(games.gameDate, oneDayAgo));
-
-      for (const game of staleGames) {
-        await ctx.db
-          .update(games)
-          .set({ status: "FT" })
-          .where(eq(games.id, game.id));
-      }
+    if (process.env.NODE_ENV === "development") {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
     }
-
     const unstartedGames = await ctx.db
       .select()
       .from(games)
@@ -142,5 +125,24 @@ export const gamesRouter = createTRPCRouter({
       ...game,
       gameData: game.gameData as GameResponse,
     }));
+  }),
+
+  filterOldGames: publicProcedure.query(async ({ ctx }) => {
+    //sometimes games are missed by the update loop. If a game is more than a day old we can safely assume it is over and clean it up.
+    const today = new Date();
+    const oneDayAgo = new Date(today);
+    oneDayAgo.setDate(today.getDate() - 1);
+
+    const staleGames = await ctx.db
+      .select()
+      .from(games)
+      .where(lt(games.gameDate, oneDayAgo));
+
+    for (const game of staleGames) {
+      await ctx.db
+        .update(games)
+        .set({ status: "FT" })
+        .where(eq(games.id, game.id));
+    }
   }),
 });
