@@ -14,7 +14,7 @@ export default async function Home({
   const session = await getServerAuthSession();
 
   if (!session) {
-    redirect("/login");
+    redirect("/api/auth/signin");
   }
   return (
     <Suspense fallback={<GamesFallback searchParams={searchParams} />}>

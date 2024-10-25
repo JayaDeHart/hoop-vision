@@ -107,9 +107,6 @@ export const gamesRouter = createTRPCRouter({
     }),
 
   getUnstartedGames: publicProcedure.query(async ({ ctx }) => {
-    if (process.env.NODE_ENV === "development") {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-    }
     const unstartedGames = await ctx.db
       .select()
       .from(games)

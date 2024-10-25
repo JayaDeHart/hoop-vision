@@ -15,7 +15,7 @@ async function Profile() {
   const session = await getServerAuthSession();
 
   if (!session) {
-    redirect("/login");
+    redirect("/api/auth/signin");
   }
 
   const userBets = await api.user.getUserBets();

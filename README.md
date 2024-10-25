@@ -1,59 +1,60 @@
 # Hoop Vision
 
-#### Bet imaginary tokens on real basketball games to test your prediction skills
+[Hoop Vision](https://hoop-vision.vercel.app/)
+
+#### Bet imaginary tokens on real basketball games to test prediction skills.
 
 ## Project Structure
 
-This project was bootstrapped using the t3 stack: https://create.t3.gg/
+Hoop Vision was bootstrapped using the T3 stack: https://create.t3.gg/. T3 is a modern web stack that prioritizes cutting-edge frameworks and typesafety.
 
 ### Database
 
-I used drizzle to handle creating the database schema and querying data from it. Drizzle also handles database migrations / schema pushes. I used a local postgres database for development and the integrated vercel postgres db in production.
+Drizzle ORM is utilized to manage the database schema and query data efficiently, handling both migrations and schema pushes. During development, a local PostgreSQL database is used, while the production environment leverages Vercel's integrated PostgreSQL database.
 
 ### API
 
-I used tRPC for all of the api routing that involves my database. This integrates really well as it maintains typesafety all the way from db->frontend. It also just makes adding new api endpoints really fast once you've set up all the boilerplate. To get the basketball game data from the third party api I just used fetch()
+The application routes API calls through tRPC, which offers seamless integration with Drizzle and maintains typesafety from the database through to the frontend. This also enables rapid API endpoint creation after initial boilerplate setup. Fetch API is employed to retrieve basketball game data from a third-party API.
 
-### Auth
+### Authentication
 
-I used next-auth. next-auth is pretty opinionated with regards to Oauth over credentialled logins, so that is the path that I took. Once you've configured your Oauth providers, next-auth handles things like accounts, sessions and tokens out of the box. It integrates really well with tRPC in creating protected API routes.
+NextAuth handles user authentication, using OAuth providers as recommended for security and simplicity. Once configured, NextAuth provides comprehensive account, session, and token management out of the box. It integrates well with tRPC, enabling the creation of protected API routes.
 
-### Styling + Components
+### Styling and Components
 
-I used tailwind css and shadcn.
+The project is styled using Tailwind CSS, with UI components powered by Shadcn.
 
-## Running The Project
+## Running the Project
 
-### Oauth
+### OAuth Setup
 
-1. server/auth.ts is where you plug your oauth details into the next-auth config. You don't need to implement all of them, or you could implement more than the ones I've set up. There will be some configuration to do on the provider side for each, but once you get your client id and secret, make a .env file and plug those in.
+1. OAuth configuration details are located in `server/auth.ts`, where provider information can be adjusted as needed. Providers require some setup on the provider’s side, but once client IDs and secrets are obtained, they should be added to the `.env` file.
 
-2. env.js does some typechecking and validating stuff, so you need to make sure you have all the same variables in there as in .env or it will throw an error. Or you can just delete env.js if you feel like doing without all that.
+2. The file `env.js` performs type checking and variable validation; any missing or undefined variables will result in an error. Ensure that both `.env` and `env.js` contain matching variables, or `env.js` can be removed if validation is not needed.
 
-### Running Database Seed:
+### Running Database Seed
 
-1. Sign in to the app with any oauth account
-2. Run the script: "db:seed:prod" or "db:seed:dev". You will be promted to enter an email, make sure you use the same one as your oauth account. It will seed either your production or development database with some sample games and bets.
+1. Sign in to the app using any OAuth account.
+2. Execute either "db:seed:prod" or "db:seed:dev" to seed the database with sample games and bets. During seeding, use the same email as the OAuth account to ensure proper association.
 
 ### Scheduling Cron Job
 
-1. The api route /api/update-games executes a lot of the core app logic.
-   It gets an updated list of games from the basketball api. It also updates the bets that contain any of the newly queried games.
+1. The API route `/api/update-games` executes essential app logic, retrieving updated game data from the basketball API and updating any related bets.
 
-2. You can use a cron job to schedule it. vercel.json contains the template for doing that, but free tier vercel accounts can only schedule crons with a frequency of 1x/day or slower. Obviously this would be insufficient, as users would be able to bet on games that had already transpired.
+2. Cron job scheduling is supported, with a template provided in `vercel.json`. Note that Vercel’s free tier limits scheduling frequency to once per day. To accommodate more frequent updates, QStash (https://upstash.com/docs/qstash/overall/getstarted) is recommended, allowing frequent API calls for free.
 
-3. I used qstash: https://upstash.com/docs/qstash/overall/getstarted. You can schedule api calls with a much higher frequency for free. The other limit you will run into is the basketball api query limit of 100 calls per day, so make sure you're not scheduling them too frequently.
+3. The basketball API has a daily query limit of 100 calls, so consider this when setting up the scheduling frequency to avoid overage.
 
-## Resources / References
+## Resources and References
 
-- https://create.t3.gg/en/introduction
+- [The T3 Stack](https://create.t3.gg/en/introduction)  
+  A comprehensive stack of libraries and tools for a modern TypeScript project, complete with a CLI for easy bootstrapping.
 
-  The T3 stack is a collection of libraries and tools that outline one possible structure of a modern typescript project. It also comes with a CLI for bootstrapping projects easily.
+- [Refactoring UI](https://www.refactoringui.com/)  
+  A practical guide on designing web UIs, created by the authors of Tailwind CSS, and referenced during this project’s design phase.
 
-- https://www.refactoringui.com/
+- [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)  
+  A thorough guide on best practices for Node.js and TypeScript applications, emphasizing production-level code quality and maintainability.
 
-  Refactoring UI is an awesome and concise guide on designing web UIs written by the creators of Tailwind. I tried to reference it as much as possible when designing this project.
-
-- https://github.com/goldbergyoni/nodebestpractices
-
-  A great guide for handling best practices in node / typescript applications.
+- [Supermaven](https://supermaven.com/)
+  An in-editor code assist tool
