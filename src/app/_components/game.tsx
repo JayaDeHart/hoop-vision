@@ -15,6 +15,7 @@ import TeamLogo from "./teamLogo";
 import { useSession } from "next-auth/react";
 import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
+import Alert from "./alert";
 
 type Props = {
   game: {
@@ -43,9 +44,14 @@ function Game({ game }: Props) {
     null,
   );
   const [amount, setAmount] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleCloseError = () => {
+    setError(null);
   };
 
   const handleTeamSelect = (team: "home" | "away") => {
@@ -71,12 +77,36 @@ function Game({ game }: Props) {
         team: selectedTeam,
         odds: selectedTeam === "home" ? game.oddsHomeTeam : game.oddsAwayTeam,
       });
+    } else {
+      setError("Unable to place bet. Try betting less tokens");
     }
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(Number(e.target.value));
   };
+
+  const formatDate = (date: Date): string => {
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  };
+
+  function convertMilitaryTime(time: string): string {
+    const [hoursStr, minutesStr] = time.split(":");
+    const hours = Number(hoursStr);
+    const minutes = Number(minutesStr);
+
+    if (isNaN(hours) || isNaN(minutes)) {
+      throw new Error("Invalid time format. Expected format: 'HH:MM'.");
+    }
+
+    const period = hours >= 12 ? "PM" : "AM";
+    const adjustedHours = hours % 12 || 12;
+
+    return `${adjustedHours}:${String(minutes).padStart(2, "0")} ${period}`;
+  }
 
   return (
     <div className="">
@@ -106,9 +136,11 @@ function Game({ game }: Props) {
             />
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative z-10 pb-2">
-          <p>@{gameData.time}</p>
+        <CardContent className="relative z-10 flex flex-col items-center justify-center pb-2">
+          <p>{formatDate(game.gameDate)}</p>
+          <p>{convertMilitaryTime(gameData.time)}</p>
         </CardContent>
+
         <CardFooter className="relative z-10 flex flex-col">
           <Button onClick={() => setIsModalOpen(true)}>Place Bet</Button>
         </CardFooter>
@@ -166,6 +198,7 @@ function Game({ game }: Props) {
               Place Bet
             </Button>
           </div>
+          {error && <Alert message={error} onClose={handleCloseError} />}
         </div>
       </Modal>
     </div>
