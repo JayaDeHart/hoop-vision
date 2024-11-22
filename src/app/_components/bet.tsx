@@ -86,6 +86,7 @@ function Bet({ bet, game }: Props) {
               result: bet.result,
             }}
             odds={game.oddsHomeTeam}
+            higherOdds={game.oddsHomeTeam < game.oddsAwayTeam}
           />
 
           <div className="text-2xl font-bold">@</div>
@@ -97,6 +98,7 @@ function Bet({ bet, game }: Props) {
               result: bet.result,
             }}
             odds={game.oddsAwayTeam}
+            higherOdds={game.oddsAwayTeam < game.oddsHomeTeam}
           />
         </CardTitle>
       </CardHeader>
