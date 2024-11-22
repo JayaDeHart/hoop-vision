@@ -21,6 +21,7 @@ interface TeamLogoProps {
     result: string | null;
   };
   higherOdds: boolean;
+  selected?: boolean;
 }
 
 const TeamLogo = ({
@@ -29,6 +30,7 @@ const TeamLogo = ({
   target,
   odds,
   higherOdds,
+  selected,
 }: TeamLogoProps) => {
   const [logo, setLogo] = useState(teamLogo);
 
@@ -40,7 +42,18 @@ const TeamLogo = ({
   ]);
 
   return (
-    <div className="relative flex flex-col items-center justify-center gap-3 xl:max-h-48 xl:max-w-56">
+    <div
+      className={`relative flex flex-col items-center justify-center gap-3 p-1 hover:cursor-pointer xl:max-h-48 xl:max-w-56`}
+      style={
+        selected
+          ? {
+              border: `4px solid ${higherOdds ? "rgba(0,204,255,0.5)" : "rgba(255,0,164,0.5)"}`,
+              borderRadius: "0.75rem",
+              margin: "-4px",
+            }
+          : {}
+      }
+    >
       <div
         className="relative rounded-full border-2 border-gray-300 bg-white shadow-md sm:h-[80px] sm:w-[80px] md:h-[80px] md:w-[80px] lg:h-[100px] lg:w-[100px] xl:h-[100px] xl:w-[100px]"
         style={{

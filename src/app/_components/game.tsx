@@ -150,35 +150,23 @@ function Game({ game }: Props) {
 
       <Modal isOpen={isModalOpen} onClose={handleClose} width="md">
         <div className="flex max-w-md flex-col items-center gap-4">
-          <div className="flex justify-between">
-            <div
-              className={`cursor-pointer p-4 text-center ${
-                selectedTeam === "home"
-                  ? "shadow-[0_0_0_4px_rgba(34,197,94,1)]"
-                  : ""
-              }`}
-              onClick={() => handleTeamSelect("home")}
-            >
+          <div className="flex justify-between gap-3">
+            <div onClick={() => handleTeamSelect("home")}>
               <TeamLogo
                 teamName={gameData.teams.home.name}
                 teamLogo={gameData.teams.home.logo}
                 odds={homeOdds}
                 higherOdds={homeOdds < awayOdds}
+                selected={selectedTeam === "home"}
               />
             </div>
-            <div
-              className={`cursor-pointer p-4 text-center ${
-                selectedTeam === "away"
-                  ? "shadow-[0_0_0_4px_rgba(34,197,94,1)]"
-                  : ""
-              }`}
-              onClick={() => handleTeamSelect("away")}
-            >
+            <div onClick={() => handleTeamSelect("away")}>
               <TeamLogo
                 teamName={gameData.teams.away.name}
                 teamLogo={gameData.teams.away.logo}
                 odds={awayOdds}
                 higherOdds={awayOdds < homeOdds}
+                selected={selectedTeam === "away"}
               />
             </div>
           </div>
