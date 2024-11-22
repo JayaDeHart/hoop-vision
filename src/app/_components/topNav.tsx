@@ -36,7 +36,7 @@ function TopNav({}: Props) {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem>
+        <NavigationMenuItem className="ml-auto">
           <SignOut />
         </NavigationMenuItem>
       </NavigationMenuList>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
+import { SiRubygems } from "react-icons/si";
 
 import {
   Tooltip,
@@ -19,9 +20,16 @@ interface TeamLogoProps {
     use: boolean;
     result: string | null;
   };
+  higherOdds: boolean;
 }
 
-const TeamLogo = ({ teamName, teamLogo, target, odds }: TeamLogoProps) => {
+const TeamLogo = ({
+  teamName,
+  teamLogo,
+  target,
+  odds,
+  higherOdds,
+}: TeamLogoProps) => {
   const [logo, setLogo] = useState(teamLogo);
 
   const colorMap = new Map([
@@ -58,11 +66,24 @@ const TeamLogo = ({ teamName, teamLogo, target, odds }: TeamLogoProps) => {
         {" "}
         {teamName.length > 18 ? teamName.substring(0, 18) + "..." : teamName}
       </div>
+
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger className="font-light">{odds}</TooltipTrigger>
-          <TooltipContent side="top" className="p-4 text-sm">
-            <p>Bet $100 to win ${(odds * 100 - 100).toFixed(0)}</p>
+          <div
+            className="rounded-md p-2"
+            style={{
+              background: `linear-gradient(90deg, rgba(255,255,255,1) 0%, ${higherOdds ? "rgba(0,204,255,1)" : "rgba(255,0,164,1)"} 100%)`,
+              opacity: 0.5,
+            }}
+          >
+            <TooltipTrigger className="font-light"> {odds}</TooltipTrigger>
+          </div>
+          <TooltipContent side="top" className="p-4 text-sm opacity-100">
+            <p className="flex items-center gap-1">
+              Bet <SiRubygems className="inline align-middle" />
+              100 to win <SiRubygems className="inline align-middle" />
+              {(odds * 100 - 100).toFixed(0)}
+            </p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -71,3 +92,10 @@ const TeamLogo = ({ teamName, teamLogo, target, odds }: TeamLogoProps) => {
 };
 
 export default TeamLogo;
+
+{
+  /* <div
+  class="rounded-x20 absolute inset-0 bottom-0 left-0 right-0 top-0 flex flex-row items-center justify-center transition-opacity duration-300"
+  style="background: linear-gradient(90deg, var(--blue-x20) 0%, var(--blue-x20) 33.33%, var(--purple-x20) 66.67%, var(--purple-x20) 100%); opacity: 0;"
+></div>; */
+}

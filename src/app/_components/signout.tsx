@@ -6,7 +6,11 @@ import { Button } from "~/components/ui/button";
 type Props = {};
 
 function SignOut({}: Props) {
-  return <Button onClick={() => signOut()}>Sign Out</Button>;
+  return (
+    <Button variant={"outline"} onClick={() => signOut()}>
+      Sign Out
+    </Button>
+  );
 }
 
 export default SignOut;

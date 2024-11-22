@@ -110,7 +110,7 @@ function Game({ game }: Props) {
 
   return (
     <div className="">
-      <Card className="flex flex-col items-center justify-between xl:h-96 xl:w-96">
+      <Card className="flex h-full flex-col items-center justify-between xl:h-96 xl:w-96">
         <CardHeader className="p-2">
           <div className="flex items-center justify-center gap-2">
             <span>{gameData.league.name}</span>
@@ -127,16 +127,18 @@ function Game({ game }: Props) {
               teamName={gameData.teams.home.name}
               teamLogo={gameData.teams.home.logo}
               odds={homeOdds}
+              higherOdds={homeOdds < awayOdds}
             />
-            <div className="text-2xl font-bold">@</div>
+            <div className="p-2 text-sm font-normal">VS</div>
             <TeamLogo
               teamName={gameData.teams.away.name}
               teamLogo={gameData.teams.away.logo}
               odds={awayOdds}
+              higherOdds={awayOdds < homeOdds}
             />
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative z-10 flex flex-col items-center justify-center pb-2">
+        <CardContent className="relative z-10 flex flex-col items-center justify-center pb-2 text-sm">
           <p>{formatDate(game.gameDate)}</p>
           <p>{convertMilitaryTime(gameData.time)}</p>
         </CardContent>
@@ -161,6 +163,7 @@ function Game({ game }: Props) {
                 teamName={gameData.teams.home.name}
                 teamLogo={gameData.teams.home.logo}
                 odds={homeOdds}
+                higherOdds={homeOdds < awayOdds}
               />
             </div>
             <div
@@ -175,6 +178,7 @@ function Game({ game }: Props) {
                 teamName={gameData.teams.away.name}
                 teamLogo={gameData.teams.away.logo}
                 odds={awayOdds}
+                higherOdds={awayOdds < homeOdds}
               />
             </div>
           </div>
